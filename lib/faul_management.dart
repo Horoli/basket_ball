@@ -134,8 +134,7 @@ class ViewFaulManagementState extends State<ViewFaulManagement>
                             ).expand(),
                             buildBasicButton(
                               child: const Text('-'),
-                              backgroundColor:
-                                  isHome ? Colors.blue : Colors.red,
+                              backgroundColor: isHome ? homeColor : awayColor,
                               onPressed: () {
                                 removeFaul(isHome: isHome, number: getNumber);
                               },
@@ -147,8 +146,7 @@ class ViewFaulManagementState extends State<ViewFaulManagement>
                             ).expand(),
                             buildBasicButton(
                               child: const Text('+'),
-                              backgroundColor:
-                                  isHome ? Colors.blue : Colors.red,
+                              backgroundColor: isHome ? homeColor : awayColor,
                               onPressed: () {
                                 addFaul(isHome: isHome, number: getNumber);
                               },
