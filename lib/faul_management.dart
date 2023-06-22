@@ -29,7 +29,7 @@ class ViewFaulManagementState extends State<ViewFaulManagement>
       appBar: AppBar(
         title: const Text('faul management'),
         backgroundColor: homeColor,
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
         actions: [
           buildTextButton(
             child: const Icon(
@@ -48,14 +48,16 @@ class ViewFaulManagementState extends State<ViewFaulManagement>
       resizeToAvoidBottomInset: true,
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
-        child: SingleChildScrollView(
-          child: Center(
-            child: SizedBox(
-              width: width * 0.8,
-              height: height * 0.8,
-              child: !isPort
-                  ? Row(children: boards())
-                  : Column(children: boards()),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Center(
+              child: SizedBox(
+                width: width * 0.8,
+                height: height * 0.8,
+                child: !isPort
+                    ? Row(children: boards())
+                    : Column(children: boards()),
+              ),
             ),
           ),
         ),
@@ -96,7 +98,7 @@ class ViewFaulManagementState extends State<ViewFaulManagement>
                 ),
                 backgroundColor: isHome ? homeColor : awayColor,
                 onPressed: () {
-                  showAddDialog(isHome);
+                  showManagementDialog(isHome, true);
                   ctrNumber.clear();
                 },
               ).sizedBoxExpand.expand(),
@@ -107,7 +109,7 @@ class ViewFaulManagementState extends State<ViewFaulManagement>
                 ),
                 backgroundColor: isHome ? homeColor : awayColor,
                 onPressed: () {
-                  showDeleteDialog(isHome);
+                  showManagementDialog(isHome, false);
                   ctrNumber.clear();
                 },
               ).sizedBoxExpand.expand(),
@@ -173,7 +175,7 @@ class ViewFaulManagementState extends State<ViewFaulManagement>
     );
   }
 
-  Future<void> showAddDialog(bool isHome) {
+  Future<void> showManagementDialog(bool isHome, bool isAdd) {
     return showDialog(
       context: context,
       builder: (context) {
@@ -185,44 +187,16 @@ class ViewFaulManagementState extends State<ViewFaulManagement>
           child: SingleChildScrollView(
             reverse: true,
             child: AlertDialog(
-              title: const Text('추가하고자 하는 플레이어의 번호를 입력하세요'),
+              title: isAdd
+                  ? const Text('추가하고자 하는 플레이어의 번호를 입력하세요')
+                  : const Text('지우고자 하는 플레이어의 번호를 입력해주세요.'),
               content: TextField(
                 keyboardType: TextInputType.number,
                 autofocus: true,
                 controller: ctrNumber,
               ),
               actions: [
-                buildBasicButton(
-                  child: const Text('저장'),
-                  onPressed: () {
-                    if (isHome) {
-                      Map<String, int> tmpMap =
-                          Map.from($mapOfHomeFaul.lastValue);
-                      if (tmpMap.keys.contains(int.parse(ctrNumber.text))) {
-                        print('이미 존재하는 번호입니다.');
-                        return;
-                      }
-                      tmpMap[ctrNumber.text] = 0;
-                      $mapOfHomeFaul.sink$(tmpMap);
-                      GSharedPreferences.setString('home', jsonEncode(tmpMap));
-                    }
-                    //
-                    if (!isHome) {
-                      Map<String, int> tmpMap =
-                          Map.from($mapOfAwayFaul.lastValue);
-
-                      if (tmpMap.keys.contains(int.parse(ctrNumber.text))) {
-                        print('이미 존재하는 번호입니다.');
-                        return;
-                      }
-                      tmpMap[ctrNumber.text] = 0;
-                      $mapOfAwayFaul.sink$(tmpMap);
-                      GSharedPreferences.setString('away', jsonEncode(tmpMap));
-                    }
-                    ctrNumber.clear();
-                    Navigator.pop(context);
-                  },
-                ),
+                isAdd ? buildAddButton(isHome) : buildRemoveButton(isHome),
               ],
             ),
           ),
@@ -231,63 +205,120 @@ class ViewFaulManagementState extends State<ViewFaulManagement>
     );
   }
 
-  Future<void> showDeleteDialog(bool isHome) {
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return GestureDetector(
-          onTap: () {
-            FocusScope.of(context).unfocus();
-            Navigator.pop(context);
-          },
-          child: SingleChildScrollView(
-            child: Center(
-              child: AlertDialog(
-                title: const Text('지우고자 하는 플레이어의 번호를 입력해주세요.'),
-                content: TextField(
-                  keyboardType: TextInputType.number,
-                  autofocus: true,
-                  controller: ctrNumber,
-                ),
-                actions: [
-                  buildBasicButton(
-                    child: const Text('삭제'),
-                    onPressed: () {
-                      if (isHome) {
-                        Map<String, int> tmpMap =
-                            Map.from($mapOfHomeFaul.lastValue);
-                        if (!tmpMap.keys.contains(ctrNumber.text)) {
-                          print('존재하지 않는 번호입니다.');
-                          return;
-                        }
-                        tmpMap.remove(ctrNumber.text);
-                        $mapOfHomeFaul.sink$(tmpMap);
-                        GSharedPreferences.setString(
-                            'home', jsonEncode(tmpMap));
-                      }
-                      //
-                      if (!isHome) {
-                        Map<String, int> tmpMap =
-                            Map.from($mapOfAwayFaul.lastValue);
-                        if (!tmpMap.keys.contains(ctrNumber.text)) {
-                          print('존재하지 않는 번호입니다.');
-                          return;
-                        }
+  // Future<void> showAddDialog(bool isHome) {
+  //   return showDialog(
+  //     context: context,
+  //     builder: (context) {
+  //       return GestureDetector(
+  //         onTap: () {
+  //           FocusScope.of(context).unfocus();
+  //           Navigator.pop(context);
+  //         },
+  //         child: SingleChildScrollView(
+  //           reverse: true,
+  //           child: AlertDialog(
+  //             title: const Text('추가하고자 하는 플레이어의 번호를 입력하세요'),
+  //             content: TextField(
+  //               keyboardType: TextInputType.number,
+  //               autofocus: true,
+  //               controller: ctrNumber,
+  //             ),
+  //             actions: [],
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
-                        tmpMap.remove(ctrNumber.text);
-                        $mapOfAwayFaul.sink$(tmpMap);
-                        GSharedPreferences.setString(
-                            'away', jsonEncode(tmpMap));
-                      }
-                      ctrNumber.clear();
-                      Navigator.pop(context);
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
+  // Future<void> showDeleteDialog(bool isHome) {
+  //   return showDialog(
+  //     context: context,
+  //     builder: (context) {
+  //       return GestureDetector(
+  //         onTap: () {
+  //           FocusScope.of(context).unfocus();
+  //           Navigator.pop(context);
+  //         },
+  //         child: SingleChildScrollView(
+  //           reverse: true,
+  //           child: Center(
+  //             child: AlertDialog(
+  //               title: const Text('지우고자 하는 플레이어의 번호를 입력해주세요.'),
+  //               content: TextField(
+  //                 keyboardType: TextInputType.number,
+  //                 autofocus: true,
+  //                 controller: ctrNumber,
+  //               ),
+  //               actions: [buildRemoveButton(isHome)],
+  //             ),
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
+
+  Widget buildAddButton(bool isHome) {
+    return buildBasicButton(
+      child: const Text('저장'),
+      onPressed: () {
+        if (isHome) {
+          Map<String, int> tmpMap = Map.from($mapOfHomeFaul.lastValue);
+          if (tmpMap.keys.contains(int.parse(ctrNumber.text))) {
+            print('이미 존재하는 번호입니다.');
+            return;
+          }
+          tmpMap[ctrNumber.text] = 0;
+          $mapOfHomeFaul.sink$(tmpMap);
+          GSharedPreferences.setString('home', jsonEncode(tmpMap));
+        }
+        //
+        if (!isHome) {
+          Map<String, int> tmpMap = Map.from($mapOfAwayFaul.lastValue);
+
+          if (tmpMap.keys.contains(int.parse(ctrNumber.text))) {
+            print('이미 존재하는 번호입니다.');
+            return;
+          }
+          tmpMap[ctrNumber.text] = 0;
+          $mapOfAwayFaul.sink$(tmpMap);
+          GSharedPreferences.setString('away', jsonEncode(tmpMap));
+        }
+        ctrNumber.clear();
+        Navigator.pop(context);
+      },
+    );
+  }
+
+  Widget buildRemoveButton(bool isHome) {
+    return buildBasicButton(
+      child: const Text('삭제'),
+      onPressed: () {
+        if (isHome) {
+          Map<String, int> tmpMap = Map.from($mapOfHomeFaul.lastValue);
+          if (!tmpMap.keys.contains(ctrNumber.text)) {
+            print('존재하지 않는 번호입니다.');
+            return;
+          }
+          tmpMap.remove(ctrNumber.text);
+          $mapOfHomeFaul.sink$(tmpMap);
+          GSharedPreferences.setString('home', jsonEncode(tmpMap));
+        }
+        //
+        if (!isHome) {
+          Map<String, int> tmpMap = Map.from($mapOfAwayFaul.lastValue);
+          if (!tmpMap.keys.contains(ctrNumber.text)) {
+            print('존재하지 않는 번호입니다.');
+            return;
+          }
+
+          tmpMap.remove(ctrNumber.text);
+          $mapOfAwayFaul.sink$(tmpMap);
+          GSharedPreferences.setString('away', jsonEncode(tmpMap));
+        }
+        ctrNumber.clear();
+        Navigator.pop(context);
       },
     );
   }
