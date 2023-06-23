@@ -26,5 +26,5 @@ import 'package:shared_preferences/shared_preferences.dart';
 part 'model/faul.dart';
 
 part 'common_widget.dart';
-part 'faul_management.dart';
+part 'foul_management.dart';
 part 'global.dart';

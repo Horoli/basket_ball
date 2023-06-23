@@ -1,12 +1,12 @@
 part of '/common.dart';
 
-class ViewFaulManagement extends StatefulWidget {
-  const ViewFaulManagement({super.key});
+class ViewFoulManagement extends StatefulWidget {
+  const ViewFoulManagement({super.key});
   @override
-  ViewFaulManagementState createState() => ViewFaulManagementState();
+  ViewFoulManagementState createState() => ViewFoulManagementState();
 }
 
-class ViewFaulManagementState extends State<ViewFaulManagement>
+class ViewFoulManagementState extends State<ViewFoulManagement>
     with SingleTickerProviderStateMixin {
   double get width => MediaQuery.of(context).size.width;
   double get height => MediaQuery.of(context).size.height;
@@ -16,9 +16,9 @@ class ViewFaulManagementState extends State<ViewFaulManagement>
   final TextEditingController ctrHomeTeamName = TextEditingController();
   final TextEditingController ctrAwayTeamName = TextEditingController();
 
-  final TStream<Map<String, int>> $mapOfHomeFaul = TStream<Map<String, int>>()
+  final TStream<Map<String, int>> $mapOfHomeFoul = TStream<Map<String, int>>()
     ..sink$({});
-  final TStream<Map<String, int>> $mapOfAwayFaul = TStream<Map<String, int>>()
+  final TStream<Map<String, int>> $mapOfAwayFoul = TStream<Map<String, int>>()
     ..sink$({});
 
   late AnimationController animationController;
@@ -27,7 +27,7 @@ class ViewFaulManagementState extends State<ViewFaulManagement>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('faul management'),
+        title: const Text('foul management'),
         backgroundColor: homeColor,
         automaticallyImplyLeading: true,
         actions: [
@@ -38,8 +38,8 @@ class ViewFaulManagementState extends State<ViewFaulManagement>
             ),
             onPressed: () {
               GSharedPreferences.clear();
-              $mapOfAwayFaul.sink$({}); // TODO : 초기화
-              $mapOfHomeFaul.sink$({}); // TODO : 초기화
+              $mapOfAwayFoul.sink$({}); // TODO : 초기화
+              $mapOfHomeFoul.sink$({}); // TODO : 초기화
             },
           ),
         ],
@@ -118,7 +118,7 @@ class ViewFaulManagementState extends State<ViewFaulManagement>
           const Padding(padding: EdgeInsets.all(8.0)),
           //
           TStreamBuilder(
-            stream: isHome ? $mapOfHomeFaul.browse$ : $mapOfAwayFaul.browse$,
+            stream: isHome ? $mapOfHomeFoul.browse$ : $mapOfAwayFoul.browse$,
             builder: (context, Map<String, int> mapOfFaul) {
               return ListView.separated(
                 separatorBuilder: (context, index) => const Divider(),
@@ -146,7 +146,7 @@ class ViewFaulManagementState extends State<ViewFaulManagement>
                               child: const Text('-'),
                               backgroundColor: isHome ? homeColor : awayColor,
                               onPressed: () {
-                                removeFaul(isHome: isHome, number: getNumber);
+                                removeFoul(isHome: isHome, number: getNumber);
                               },
                             ).expand(),
                             Center(
@@ -158,7 +158,7 @@ class ViewFaulManagementState extends State<ViewFaulManagement>
                               child: const Text('+'),
                               backgroundColor: isHome ? homeColor : awayColor,
                               onPressed: () {
-                                addFaul(isHome: isHome, number: getNumber);
+                                addFoul(isHome: isHome, number: getNumber);
                               },
                             ).expand(),
                           ],
@@ -264,25 +264,25 @@ class ViewFaulManagementState extends State<ViewFaulManagement>
       child: const Text('저장'),
       onPressed: () {
         if (isHome) {
-          Map<String, int> tmpMap = Map.from($mapOfHomeFaul.lastValue);
+          Map<String, int> tmpMap = Map.from($mapOfHomeFoul.lastValue);
           if (tmpMap.keys.contains(int.parse(ctrNumber.text))) {
             print('이미 존재하는 번호입니다.');
             return;
           }
           tmpMap[ctrNumber.text] = 0;
-          $mapOfHomeFaul.sink$(tmpMap);
+          $mapOfHomeFoul.sink$(tmpMap);
           GSharedPreferences.setString('home', jsonEncode(tmpMap));
         }
         //
         if (!isHome) {
-          Map<String, int> tmpMap = Map.from($mapOfAwayFaul.lastValue);
+          Map<String, int> tmpMap = Map.from($mapOfAwayFoul.lastValue);
 
           if (tmpMap.keys.contains(int.parse(ctrNumber.text))) {
             print('이미 존재하는 번호입니다.');
             return;
           }
           tmpMap[ctrNumber.text] = 0;
-          $mapOfAwayFaul.sink$(tmpMap);
+          $mapOfAwayFoul.sink$(tmpMap);
           GSharedPreferences.setString('away', jsonEncode(tmpMap));
         }
         ctrNumber.clear();
@@ -296,25 +296,25 @@ class ViewFaulManagementState extends State<ViewFaulManagement>
       child: const Text('삭제'),
       onPressed: () {
         if (isHome) {
-          Map<String, int> tmpMap = Map.from($mapOfHomeFaul.lastValue);
+          Map<String, int> tmpMap = Map.from($mapOfHomeFoul.lastValue);
           if (!tmpMap.keys.contains(ctrNumber.text)) {
             print('존재하지 않는 번호입니다.');
             return;
           }
           tmpMap.remove(ctrNumber.text);
-          $mapOfHomeFaul.sink$(tmpMap);
+          $mapOfHomeFoul.sink$(tmpMap);
           GSharedPreferences.setString('home', jsonEncode(tmpMap));
         }
         //
         if (!isHome) {
-          Map<String, int> tmpMap = Map.from($mapOfAwayFaul.lastValue);
+          Map<String, int> tmpMap = Map.from($mapOfAwayFoul.lastValue);
           if (!tmpMap.keys.contains(ctrNumber.text)) {
             print('존재하지 않는 번호입니다.');
             return;
           }
 
           tmpMap.remove(ctrNumber.text);
-          $mapOfAwayFaul.sink$(tmpMap);
+          $mapOfAwayFoul.sink$(tmpMap);
           GSharedPreferences.setString('away', jsonEncode(tmpMap));
         }
         ctrNumber.clear();
@@ -333,7 +333,7 @@ class ViewFaulManagementState extends State<ViewFaulManagement>
 
   void initHome() {
     if (GSharedPreferences.getString('home') == null) {
-      $mapOfHomeFaul.sink$({});
+      $mapOfHomeFoul.sink$({});
       return;
     }
 
@@ -342,12 +342,12 @@ class ViewFaulManagementState extends State<ViewFaulManagement>
     Map<String, int> convertHome = getHome.map(
         (key, value) => MapEntry(key.toString(), int.parse(value.toString())));
 
-    $mapOfHomeFaul.sink$(convertHome);
+    $mapOfHomeFoul.sink$(convertHome);
   }
 
   void initAway() {
     if (GSharedPreferences.getString('away') == null) {
-      $mapOfAwayFaul.sink$({});
+      $mapOfAwayFoul.sink$({});
       return;
     }
 
@@ -356,7 +356,7 @@ class ViewFaulManagementState extends State<ViewFaulManagement>
     Map<String, int> convertAway = getAway.map(
         (key, value) => MapEntry(key.toString(), int.parse(value.toString())));
 
-    $mapOfAwayFaul.sink$(convertAway);
+    $mapOfAwayFoul.sink$(convertAway);
   }
 
   void setAnimation() {
@@ -386,36 +386,36 @@ class ViewFaulManagementState extends State<ViewFaulManagement>
     animationController.forward();
   }
 
-  void addFaul({required bool isHome, required String number}) {
+  void addFoul({required bool isHome, required String number}) {
     if (isHome) {
-      Map<String, int> tmpMap = Map.from($mapOfHomeFaul.lastValue);
+      Map<String, int> tmpMap = Map.from($mapOfHomeFoul.lastValue);
       tmpMap[number] = tmpMap[number]! + 1;
-      $mapOfHomeFaul.sink$(tmpMap);
+      $mapOfHomeFoul.sink$(tmpMap);
 
       GSharedPreferences.setString('home', jsonEncode(tmpMap));
       return;
     }
     //
-    Map<String, int> tmpMap = Map.from($mapOfAwayFaul.lastValue);
+    Map<String, int> tmpMap = Map.from($mapOfAwayFoul.lastValue);
     tmpMap[number] = tmpMap[number]! + 1;
-    $mapOfAwayFaul.sink$(tmpMap);
+    $mapOfAwayFoul.sink$(tmpMap);
     GSharedPreferences.setString('away', jsonEncode(tmpMap));
   }
 
-  void removeFaul({required bool isHome, required String number}) {
+  void removeFoul({required bool isHome, required String number}) {
     if (isHome) {
-      Map<String, int> tmpMap = Map.from($mapOfHomeFaul.lastValue);
+      Map<String, int> tmpMap = Map.from($mapOfHomeFoul.lastValue);
       tmpMap[number] = tmpMap[number]! - 1;
       if (tmpMap[number]! < 0) return;
-      $mapOfHomeFaul.sink$(tmpMap);
+      $mapOfHomeFoul.sink$(tmpMap);
       GSharedPreferences.setString('home', jsonEncode(tmpMap));
       return;
     }
     //
-    Map<String, int> tmpMap = Map.from($mapOfAwayFaul.lastValue);
+    Map<String, int> tmpMap = Map.from($mapOfAwayFoul.lastValue);
     tmpMap[number] = tmpMap[number]! - 1;
     if (tmpMap[number]! < 0) return;
-    $mapOfAwayFaul.sink$(tmpMap);
+    $mapOfAwayFoul.sink$(tmpMap);
     GSharedPreferences.setString('away', jsonEncode(tmpMap));
   }
 

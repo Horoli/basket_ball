@@ -1,4 +1,4 @@
-import 'package:faul_management/common.dart';
+import 'package:foul_management/common.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,11 +18,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Map<String, Widget Function(BuildContext)> routes = {
-      '/': (context) => const ViewFaulManagement(),
+      '/': (context) => const ViewFoulManagement(),
     };
 
     return MaterialApp(
-      title: 'faul_management',
+      title: 'foul_management',
       // theme: ThemeData(
       //   colorScheme: ColorScheme.fromSeed(
       //       seedColor: const Color.fromARGB(255, 83, 27, 27)),
