@@ -1,6 +1,6 @@
 {
-    "name": "faul_management",
-    "short_name": "faul_management",
+    "name": "foul_management",
+    "short_name": "foul_management",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

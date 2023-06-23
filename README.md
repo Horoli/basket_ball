@@ -1,4 +1,4 @@
-# faul_management
+# foul_management
 
 A new Flutter project.
 
