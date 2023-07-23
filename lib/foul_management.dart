@@ -28,6 +28,7 @@ class ViewFoulManagementState extends State<ViewFoulManagement>
     return Scaffold(
       appBar: AppBar(
         title: const Text('foul management'),
+        toolbarHeight: kToolbarHeight,
         backgroundColor: homeColor,
         automaticallyImplyLeading: true,
         actions: [
@@ -67,13 +68,13 @@ class ViewFoulManagementState extends State<ViewFoulManagement>
 
   List<Widget> boards() {
     return [
-      buildFaulBoard(isHome: true).expand(),
+      buildFoulBoard(isHome: true).expand(),
       const Padding(padding: EdgeInsets.all(5)),
-      buildFaulBoard(isHome: false).expand(),
+      buildFoulBoard(isHome: false).expand(),
     ];
   }
 
-  Widget buildFaulBoard({required bool isHome}) {
+  Widget buildFoulBoard({required bool isHome}) {
     return buildBorderContainer(
       child: Column(
         children: [
@@ -87,85 +88,102 @@ class ViewFoulManagementState extends State<ViewFoulManagement>
                       ? ctrHomeTeamName
                       : ctrAwayTeamName, // TODO : 팀이름 입력받는 컨트롤러
                   decoration: InputDecoration(
-                    // border: OutlineInputBorder(),
                     labelText: isHome ? 'home' : 'away',
                   ),
                 ),
               ).expand(),
               buildBasicButton(
                 child: const Text(
-                  'add player',
+                  'add',
                 ),
                 backgroundColor: isHome ? homeColor : awayColor,
                 onPressed: () {
                   showManagementDialog(isHome, true);
                   ctrNumber.clear();
                 },
-              ).sizedBoxExpand.expand(),
-              const Padding(padding: EdgeInsets.all(5)),
+              ),
+              const VerticalDivider(),
               buildBasicButton(
                 child: const Text(
-                  'del player',
+                  'del',
                 ),
                 backgroundColor: isHome ? homeColor : awayColor,
                 onPressed: () {
                   showManagementDialog(isHome, false);
                   ctrNumber.clear();
                 },
-              ).sizedBoxExpand.expand(),
+              ),
+              const VerticalDivider(),
+              buildBasicButton(
+                child: const Text(
+                  'init',
+                ),
+                backgroundColor: isHome ? homeColor : awayColor,
+                onPressed: () {
+                  // TODO : 초기화
+                  if (isHome) {
+                    $mapOfHomeFoul.sink$({});
+                    GSharedPreferences.setString('home', jsonEncode({}));
+                  }
+                  if (!isHome) {
+                    $mapOfAwayFoul.sink$({});
+                    GSharedPreferences.setString('away', jsonEncode({}));
+                  }
+                  ctrNumber.clear();
+                },
+              ),
             ],
-          ).sizedBox(height: kToolbarHeight),
+          ).sizedBox(height: 40),
           const Padding(padding: EdgeInsets.all(8.0)),
           //
           TStreamBuilder(
             stream: isHome ? $mapOfHomeFoul.browse$ : $mapOfAwayFoul.browse$,
-            builder: (context, Map<String, int> mapOfFaul) {
+            builder: (context, Map<String, int> mapOfFoul) {
               return ListView.separated(
                 separatorBuilder: (context, index) => const Divider(),
-                itemCount: mapOfFaul.length,
+                itemCount: mapOfFoul.length,
                 itemBuilder: (context, int index) {
-                  String getNumber = mapOfFaul.keys.toList()[index].toString();
-                  int getFaulCount = mapOfFaul[getNumber]!;
+                  List<int> convertKeys =
+                      mapOfFoul.keys.toList().map((k) => int.parse(k)).toList();
+
+                  convertKeys.sort();
+
+                  String getNumber = convertKeys[index].toString();
+
+                  int getFoulCount = mapOfFoul[getNumber]!;
 
                   return AnimatedBuilder(
                     animation: animationController,
                     builder: (context, child) {
                       return Container(
-                        color: getFaulCount >= 3 ? colorAnimation.value : null,
+                        color: getFoulCount >= 3 ? colorAnimation.value : null,
                         child: Row(
                           children: [
+                            Center(child: Text('${index + 1}')).expand(),
                             Center(
                               child: Text(
-                                '$getNumber',
+                                'No.$getNumber',
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            ).expand(),
+                            ).expand(flex: 3),
                             buildBasicButton(
-                              child: const Text('-'),
-                              backgroundColor: isHome ? homeColor : awayColor,
-                              onPressed: () {
-                                removeFoul(isHome: isHome, number: getNumber);
-                              },
-                            ).expand(),
-                            Center(
-                              child: Container(
-                                child: Text('$getFaulCount'),
-                              ),
-                            ).expand(),
+                                child: const Text('-'),
+                                backgroundColor: isHome ? homeColor : awayColor,
+                                onPressed: () => removeFoul(
+                                    isHome: isHome, number: getNumber)),
+                            Center(child: Text('$getFoulCount')).expand(),
                             buildBasicButton(
-                              child: const Text('+'),
-                              backgroundColor: isHome ? homeColor : awayColor,
-                              onPressed: () {
-                                addFoul(isHome: isHome, number: getNumber);
-                              },
-                            ).expand(),
+                                child: const Text('+'),
+                                backgroundColor: isHome ? homeColor : awayColor,
+                                onPressed: () =>
+                                    addFoul(isHome: isHome, number: getNumber)),
                           ],
                         ),
                       );
                     },
-                  ).sizedBox(height: kToolbarHeight);
+                  ).sizedBox(height: 30);
                 },
               );
             },
@@ -184,143 +202,32 @@ class ViewFoulManagementState extends State<ViewFoulManagement>
             FocusScope.of(context).unfocus();
             Navigator.pop(context);
           },
-          child: SingleChildScrollView(
-            reverse: true,
-            child: AlertDialog(
-              title: isAdd
-                  ? const Text('추가하고자 하는 플레이어의 번호를 입력하세요')
-                  : const Text('지우고자 하는 플레이어의 번호를 입력해주세요.'),
-              content: TextField(
-                keyboardType: TextInputType.number,
-                autofocus: true,
-                controller: ctrNumber,
-              ),
-              actions: [
-                isAdd ? buildAddButton(isHome) : buildRemoveButton(isHome),
-              ],
+          child: AlertDialog(
+            title: isAdd
+                ? const Text('추가하고자 하는 플레이어의 번호를 입력하세요')
+                : const Text('지우고자 하는 플레이어의 번호를 입력해주세요.'),
+            content: TextField(
+              keyboardType: TextInputType.number,
+              autofocus: true,
+              controller: ctrNumber,
             ),
+            actions: [
+              isAdd ? buildAddButton(isHome) : buildRemoveButton(isHome),
+            ],
           ),
         );
       },
     );
   }
 
-  // Future<void> showAddDialog(bool isHome) {
-  //   return showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return GestureDetector(
-  //         onTap: () {
-  //           FocusScope.of(context).unfocus();
-  //           Navigator.pop(context);
-  //         },
-  //         child: SingleChildScrollView(
-  //           reverse: true,
-  //           child: AlertDialog(
-  //             title: const Text('추가하고자 하는 플레이어의 번호를 입력하세요'),
-  //             content: TextField(
-  //               keyboardType: TextInputType.number,
-  //               autofocus: true,
-  //               controller: ctrNumber,
-  //             ),
-  //             actions: [],
-  //           ),
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
-
-  // Future<void> showDeleteDialog(bool isHome) {
-  //   return showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return GestureDetector(
-  //         onTap: () {
-  //           FocusScope.of(context).unfocus();
-  //           Navigator.pop(context);
-  //         },
-  //         child: SingleChildScrollView(
-  //           reverse: true,
-  //           child: Center(
-  //             child: AlertDialog(
-  //               title: const Text('지우고자 하는 플레이어의 번호를 입력해주세요.'),
-  //               content: TextField(
-  //                 keyboardType: TextInputType.number,
-  //                 autofocus: true,
-  //                 controller: ctrNumber,
-  //               ),
-  //               actions: [buildRemoveButton(isHome)],
-  //             ),
-  //           ),
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
-
   Widget buildAddButton(bool isHome) {
     return buildBasicButton(
-      child: const Text('저장'),
-      onPressed: () {
-        if (isHome) {
-          Map<String, int> tmpMap = Map.from($mapOfHomeFoul.lastValue);
-          if (tmpMap.keys.contains(int.parse(ctrNumber.text))) {
-            print('이미 존재하는 번호입니다.');
-            return;
-          }
-          tmpMap[ctrNumber.text] = 0;
-          $mapOfHomeFoul.sink$(tmpMap);
-          GSharedPreferences.setString('home', jsonEncode(tmpMap));
-        }
-        //
-        if (!isHome) {
-          Map<String, int> tmpMap = Map.from($mapOfAwayFoul.lastValue);
-
-          if (tmpMap.keys.contains(int.parse(ctrNumber.text))) {
-            print('이미 존재하는 번호입니다.');
-            return;
-          }
-          tmpMap[ctrNumber.text] = 0;
-          $mapOfAwayFoul.sink$(tmpMap);
-          GSharedPreferences.setString('away', jsonEncode(tmpMap));
-        }
-        ctrNumber.clear();
-        Navigator.pop(context);
-      },
-    );
+        child: const Text('저장'), onPressed: () => savePlayer(isHome));
   }
 
   Widget buildRemoveButton(bool isHome) {
     return buildBasicButton(
-      child: const Text('삭제'),
-      onPressed: () {
-        if (isHome) {
-          Map<String, int> tmpMap = Map.from($mapOfHomeFoul.lastValue);
-          if (!tmpMap.keys.contains(ctrNumber.text)) {
-            print('존재하지 않는 번호입니다.');
-            return;
-          }
-          tmpMap.remove(ctrNumber.text);
-          $mapOfHomeFoul.sink$(tmpMap);
-          GSharedPreferences.setString('home', jsonEncode(tmpMap));
-        }
-        //
-        if (!isHome) {
-          Map<String, int> tmpMap = Map.from($mapOfAwayFoul.lastValue);
-          if (!tmpMap.keys.contains(ctrNumber.text)) {
-            print('존재하지 않는 번호입니다.');
-            return;
-          }
-
-          tmpMap.remove(ctrNumber.text);
-          $mapOfAwayFoul.sink$(tmpMap);
-          GSharedPreferences.setString('away', jsonEncode(tmpMap));
-        }
-        ctrNumber.clear();
-        Navigator.pop(context);
-      },
-    );
+        child: const Text('삭제'), onPressed: () => removePlayer(isHome));
   }
 
   @override
@@ -417,6 +324,45 @@ class ViewFoulManagementState extends State<ViewFoulManagement>
     if (tmpMap[number]! < 0) return;
     $mapOfAwayFoul.sink$(tmpMap);
     GSharedPreferences.setString('away', jsonEncode(tmpMap));
+  }
+
+  void savePlayer(bool isHome) {
+    Map<String, int> tmpMap =
+        Map.from(isHome ? $mapOfHomeFoul.lastValue : $mapOfAwayFoul.lastValue);
+    if (tmpMap.keys.contains(int.parse(ctrNumber.text))) {
+      print('이미 존재하는 번호입니다.');
+      return;
+    }
+    tmpMap[ctrNumber.text] = 0;
+
+    String teamDivision = isHome ? 'home' : 'away';
+
+    GSharedPreferences.setString(teamDivision, jsonEncode(tmpMap));
+
+    // stream sink$
+    isHome ? $mapOfHomeFoul.sink$(tmpMap) : $mapOfAwayFoul.sink$(tmpMap);
+
+    ctrNumber.clear();
+    Navigator.pop(context);
+  }
+
+  void removePlayer(bool isHome) {
+    Map<String, int> tmpMap =
+        Map.from(isHome ? $mapOfHomeFoul.lastValue : $mapOfAwayFoul.lastValue);
+    if (!tmpMap.keys.contains(ctrNumber.text)) {
+      print('존재하지 않는 번호입니다.');
+      return;
+    }
+
+    tmpMap.remove(ctrNumber.text);
+    isHome ? $mapOfHomeFoul.sink$(tmpMap) : $mapOfAwayFoul.sink$(tmpMap);
+
+    String teamDivision = isHome ? 'home' : 'away';
+
+    GSharedPreferences.setString(teamDivision, jsonEncode(tmpMap));
+
+    ctrNumber.clear();
+    Navigator.pop(context);
   }
 
   @override

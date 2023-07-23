@@ -1,24 +1,23 @@
 name: foul_management
 description: A new Flutter project.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.0.5 <4.0.0'
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-    
 
   tnd_core:
     git:
-      url: 'https://git.technolda.com/Technolda/tnd_core.git'
+      url: "https://git.technolda.com/Technolda/tnd_core.git"
       ref: v1.5
   tnd_pkg_widget:
     git:
-      url: 'https://git.technolda.com/Technolda/tnd_pkg_widget.git'
+      url: "https://git.technolda.com/Technolda/tnd_pkg_widget.git"
       ref: v1.5
   tnd_pkg_repository:
     git:
@@ -37,5 +36,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
-
+  assets:
+    - assets/images/

@@ -10,7 +10,7 @@ class ViewSplash extends StatefulWidget {
 class ViewSplashState extends State<ViewSplash>
     with SingleTickerProviderStateMixin {
   final TStream<bool> $splash = TStream<bool>();
-  final int splashDuration = 20000;
+  final int splashDuration = 1000;
 
   @override
   Widget build(BuildContext context) {
@@ -21,8 +21,11 @@ class ViewSplashState extends State<ViewSplash>
           return AnimatedOpacity(
             opacity: splash ? 1 : 0,
             duration: Duration(milliseconds: splashDuration),
-            child: Container(
-              color: Colors.blue,
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Center(
+                child: Image.asset('images/basket_ball.png'),
+              ),
             ),
           );
         },
@@ -38,7 +41,15 @@ class ViewSplashState extends State<ViewSplash>
 
   Future<void> loadData() async {
     $splash.sink$(true);
-    // $splash.sink$(false);
+    await wait(splashDuration);
+    $splash.sink$(false);
+
+    await wait(splashDuration);
     await Navigator.pushNamed(context, 'foul');
+  }
+
+  Future<void> wait(int? milliseconds) {
+    milliseconds ??= 0;
+    return Future.delayed(Duration(milliseconds: milliseconds));
   }
 }
