@@ -45,7 +45,7 @@ class ViewSplashState extends State<ViewSplash>
     $splash.sink$(false);
 
     await wait(splashDuration);
-    await Navigator.pushNamed(context, 'foul');
+    await Navigator.pushReplacementNamed(context, 'home');
   }
 
   Future<void> wait(int? milliseconds) {

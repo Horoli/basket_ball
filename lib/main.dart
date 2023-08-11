@@ -19,7 +19,8 @@ class AppRoot extends StatelessWidget {
   Widget build(BuildContext context) {
     final Map<String, Widget Function(BuildContext)> routes = {
       '/': (context) => const ViewSplash(),
-      'foul': (context) => const ViewFoulManagement(),
+      'home': (context) => const ViewHome(),
+      'foul': (context) => const ViewFoul(),
     };
 
     return MaterialApp(

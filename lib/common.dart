@@ -23,10 +23,13 @@ import 'package:tnd_core/tnd_core.dart'; // 각종 유틸 확인
 import 'package:tnd_pkg_widget/tnd_pkg_widget.dart'; // 공용 위젯
 import 'package:shared_preferences/shared_preferences.dart';
 
-part 'model/foul.dart';
-
 part 'splash.dart';
 
 part 'common_widget.dart';
-part 'foul_management.dart';
 part 'global.dart';
+
+part 'model/foul.dart';
+
+part 'view/home.dart';
+part 'view/foul_management.dart';
+part 'view/operation_board.dart';

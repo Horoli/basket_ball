@@ -1,12 +1,12 @@
 part of '/common.dart';
 
-class ViewFoulManagement extends StatefulWidget {
-  const ViewFoulManagement({super.key});
+class ViewFoul extends StatefulWidget {
+  const ViewFoul({super.key});
   @override
-  ViewFoulManagementState createState() => ViewFoulManagementState();
+  ViewFoulState createState() => ViewFoulState();
 }
 
-class ViewFoulManagementState extends State<ViewFoulManagement>
+class ViewFoulState extends State<ViewFoul>
     with SingleTickerProviderStateMixin {
   double get width => MediaQuery.of(context).size.width;
   double get height => MediaQuery.of(context).size.height;
@@ -26,31 +26,13 @@ class ViewFoulManagementState extends State<ViewFoulManagement>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('foul management'),
-        toolbarHeight: kToolbarHeight,
-        backgroundColor: homeColor,
-        automaticallyImplyLeading: true,
-        actions: [
-          buildTextButton(
-            child: const Icon(
-              Icons.refresh,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              GSharedPreferences.clear();
-              $mapOfAwayFoul.sink$({}); // TODO : 초기화
-              $mapOfHomeFoul.sink$({}); // TODO : 초기화
-            },
-          ),
-        ],
-      ),
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: Center(
-          child: SingleChildScrollView(
+      body: Stack(
+        children: [
+          Positioned(top: 0, right: 0, child: buildResetButton()),
+          GestureDetector(
+            onTap: () => FocusScope.of(context).unfocus(),
             child: Center(
               child: SizedBox(
                 width: width * 0.8,
@@ -61,7 +43,7 @@ class ViewFoulManagementState extends State<ViewFoulManagement>
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -72,6 +54,21 @@ class ViewFoulManagementState extends State<ViewFoulManagement>
       const Padding(padding: EdgeInsets.all(5)),
       buildFoulBoard(isHome: false).expand(),
     ];
+  }
+
+  Widget buildResetButton() {
+    return buildTextButton(
+      child: const Icon(
+        Icons.refresh,
+        color: homeColor,
+      ),
+      onPressed: () {
+        GSharedPreferences.remove('home');
+        GSharedPreferences.remove('away');
+        $mapOfAwayFoul.sink$({}); // TODO : 초기화
+        $mapOfHomeFoul.sink$({}); // TODO : 초기화
+      },
+    );
   }
 
   Widget buildFoulBoard({required bool isHome}) {
