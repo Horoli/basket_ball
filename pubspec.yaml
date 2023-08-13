@@ -27,6 +27,7 @@ dependencies:
   cupertino_icons: ^1.0.2
 
   shared_preferences: ^2.1.1
+  syncfusion_flutter_signaturepad: ^22.2.8
 
 dev_dependencies:
   flutter_test:
@@ -37,4 +38,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    # -assets/images/
     - assets/images/basket-ball.png
+    - assets/images/operation-board.png

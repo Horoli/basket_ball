@@ -9,40 +9,117 @@ class ViewOperationBoard extends StatefulWidget {
 class ViewOperationBoardState extends State<ViewOperationBoard> {
   final String resetButton = 'reset';
   final String mapName = 'mapOfPositions';
+  final double unitWidth = 40.0, unitHeight = 40.0;
+  final TStream<Map<String, List<double>>> $mapOfPositions =
+      TStream<Map<String, List<double>>>()..sink$({});
+  final TStream<bool> $usePad = TStream<bool>()..sink$(false);
+  final TStream<ByteData> $padData = TStream<ByteData>();
+  final TStream<Color> $strokeColor = TStream<Color>()..sink$(Colors.black);
+
+  final GlobalKey<SfSignaturePadState> signatureGlobalKey = GlobalKey();
+
   double get fullWidth => MediaQuery.of(context).size.width;
   double get fullHeight => MediaQuery.of(context).size.height;
-
-  double unitWidth = 50.0, unitHeight = 50.0;
-
-  TStream<Map<String, List<double>>> $mapOfPositions =
-      TStream<Map<String, List<double>>>()..sink$({});
 
   @override
   Widget build(BuildContext context) {
     return TStreamBuilder(
-        stream: $mapOfPositions.browse$,
-        builder: (context, Map<String, List<double>> mapOfPositions) {
-          return Stack(
-            children: [
-              Center(
-                child: Container(
-                  width: fullWidth * 0.9,
-                  height: fullHeight * 0.8,
-                  decoration: BoxDecoration(border: Border.all()),
-                  child: Column(
-                    children: [
-                      Container().expand(),
-                      const Divider(),
-                      Container().expand(),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(top: 0, right: 0, child: buildResetButton()),
-              for (String key in mapOfPositions.keys.toList())
-                buildPositioned(key, mapOfPositions[key]!),
-            ],
-          );
+        stream: $usePad.browse$,
+        builder: (context, bool usePad) {
+          return TStreamBuilder(
+              stream: $mapOfPositions.browse$,
+              builder: (context, Map<String, List<double>> mapOfPositions) {
+                return Column(
+                  children: [
+                    Row(
+                      children: [
+                        buildResetButton().expand(),
+                        buildUsePadButton(usePad).expand(),
+                      ],
+                    ).sizedBox(height: kToolbarHeight),
+                    const Divider(),
+                    Stack(
+                      children: [
+                        Center(
+                          child: Image.asset(
+                            'assets/images/operation-board.png',
+                            fit: BoxFit.fill,
+                          ),
+                        ),
+                        for (String key in mapOfPositions.keys.toList())
+                          buildPositioned(key, mapOfPositions[key]!),
+                        if (usePad)
+                          Center(
+                            child: SizedBox(
+                              width: fullWidth,
+                              height: fullHeight,
+                              child: SfSignaturePad(
+                                key: signatureGlobalKey,
+                                strokeColor: $strokeColor.lastValue,
+                                minimumStrokeWidth: 2,
+                                maximumStrokeWidth: 2,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ).expand(),
+                    const Divider(),
+                    usePad
+                        ? buildExchangePadColor()
+                            .sizedBox(height: kToolbarHeight)
+                        : Container().sizedBox(height: kToolbarHeight),
+                    // const Padding(padding: EdgeInsets.all(10)),
+                  ],
+                );
+              });
+        });
+  }
+
+  Widget buildUsePadButton(bool usePad) {
+    return buildTextButton(
+        child: Text('usePad : $usePad'),
+        onPressed: () async {
+          usePad ? $usePad.sink$(false) : $usePad.sink$(true);
+
+          // 현재 패드가 use인 경우, padData를 저장함
+          // if (usePad) {
+          // await signatureGlobalKey.currentState!.toImage();
+          // final padData =
+          //     await signatureGlobalKey.currentState!.toImage(pixelRatio: 3);
+          // print('padData $padData');
+
+          // final bytes =
+          //     await padData.toByteData(format: ui.ImageByteFormat.png);
+          //   $usePad.sink$(false);
+          //   return;
+          // }
+
+          // $usePad.sink$(true);
+        });
+  }
+
+  Widget buildExchangePadColor() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text('색상 선택'),
+        const VerticalDivider(),
+        buildSelectColorButton(colorWhite),
+        buildSelectColorButton(colorBlack),
+        buildSelectColorButton(colorYellow),
+        buildSelectColorButton(colorOrange),
+        buildSelectColorButton(colorCyan),
+      ],
+    );
+  }
+
+  Widget buildSelectColorButton(Color color) {
+    return buildBasicButton(
+        child: Container(),
+        backgroundColor: color,
+        onPressed: () {
+          $strokeColor.sink$(color);
+          $usePad.sink$(true);
         });
   }
 
@@ -50,7 +127,7 @@ class ViewOperationBoardState extends State<ViewOperationBoard> {
     return buildTextButton(
       child: const Icon(
         Icons.refresh,
-        color: homeColor,
+        color: colorHome,
       ),
       onPressed: () {
         GSharedPreferences.remove(mapName);
@@ -65,7 +142,7 @@ class ViewOperationBoardState extends State<ViewOperationBoard> {
 
     return Positioned(
       left: position.first,
-      top: position.last - unitHeight,
+      top: position.last - kToolbarHeight - 70,
       child: Draggable(
         feedback: Material(
           type: MaterialType.transparency,
@@ -81,8 +158,8 @@ class ViewOperationBoardState extends State<ViewOperationBoard> {
               : Container(
                   decoration: BoxDecoration(
                       color: isHomeTeam
-                          ? homeColor.withOpacity(0.3)
-                          : awayColor.withOpacity(0.3),
+                          ? colorHome.withOpacity(0.3)
+                          : colorAway.withOpacity(0.3),
                       borderRadius:
                           const BorderRadius.all(Radius.circular(30))),
                   width: unitWidth,
@@ -100,7 +177,6 @@ class ViewOperationBoardState extends State<ViewOperationBoard> {
 
           Map<String, List<double>> tmpMap = Map.from($mapOfPositions.lastValue)
             ..[key] = beforeOffset;
-          // tmpMap[key] = beforeOffset;
 
           String jsonPosition = jsonEncode(tmpMap);
           $mapOfPositions.sink$(tmpMap);
@@ -118,16 +194,13 @@ class ViewOperationBoardState extends State<ViewOperationBoard> {
               )
             : Container(
                 decoration: BoxDecoration(
-                    color: isHomeTeam ? homeColor : awayColor,
+                    color: isHomeTeam ? colorHome : colorAway,
                     borderRadius: const BorderRadius.all(Radius.circular(30))),
                 width: unitWidth,
                 height: unitHeight,
-                // color: Colors.blue,
                 child: Center(
-                    child: Text(
-                  key,
-                  style: const TextStyle(color: Colors.white),
-                )),
+                  child: Text(key, style: const TextStyle(color: Colors.white)),
+                ),
               ),
       ),
     );
@@ -163,16 +236,16 @@ class ViewOperationBoardState extends State<ViewOperationBoard> {
   }
 
   final Map<String, List<double>> defaultPositions = {
-    'H-1': [0.0, 70],
-    'H-2': [0.0, 70 * 2],
-    'H-3': [0.0, 70 * 3],
-    'H-4': [0.0, 70 * 4],
-    'H-5': [0.0, 70 * 5],
-    'A-1': [75.0, 70],
-    'A-2': [75.0, 70 * 2],
-    'A-3': [75.0, 70 * 3],
-    'A-4': [75.0, 70 * 4],
-    'A-5': [75.0, 70 * 5],
-    'ball': [0.0, 70 * 6],
+    'H-1': [defaultDx * 0, defaultDy],
+    'H-2': [defaultDx * 1, defaultDy],
+    'H-3': [defaultDx * 2, defaultDy],
+    'H-4': [defaultDx * 3, defaultDy],
+    'H-5': [defaultDx * 4, defaultDy],
+    'A-1': [defaultDx * 0, defaultDy + kToolbarHeight],
+    'A-2': [defaultDx * 1, defaultDy + kToolbarHeight],
+    'A-3': [defaultDx * 2, defaultDy + kToolbarHeight],
+    'A-4': [defaultDx * 3, defaultDy + kToolbarHeight],
+    'A-5': [defaultDx * 4, defaultDy + kToolbarHeight],
+    'ball': [defaultDx * 0, defaultDy + kToolbarHeight * 2],
   };
 }

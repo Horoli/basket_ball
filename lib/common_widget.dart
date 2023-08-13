@@ -1,12 +1,21 @@
 part of 'common.dart';
 
-const Color homeColor = ui.Color.fromARGB(255, 52, 92, 126);
-const Color awayColor = ui.Color.fromARGB(255, 149, 63, 57);
+const double defaultDx = 70;
+const double defaultDy = 150;
+
+const Color colorAppBar = ui.Color.fromARGB(255, 41, 84, 122);
+const Color colorHome = ui.Color.fromARGB(255, 108, 141, 170);
+const Color colorAway = ui.Color.fromARGB(255, 196, 136, 131);
+const Color colorWhite = Colors.white;
+const Color colorBlack = Colors.black;
+const Color colorYellow = Colors.yellow;
+const Color colorOrange = Colors.orange;
+const Color colorCyan = Colors.cyan;
 
 Widget buildBasicButton({
   required child,
   required VoidCallback? onPressed,
-  Color backgroundColor = homeColor,
+  Color backgroundColor = colorHome,
 }) {
   return ElevatedButton(
     style: ElevatedButton.styleFrom(

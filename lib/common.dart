@@ -3,6 +3,7 @@ library common;
 import 'dart:collection';
 import 'dart:async';
 import 'dart:convert';
+import 'dart:js_interop';
 import 'dart:typed_data';
 // import 'dart:io';
 import 'dart:ui' as ui;
@@ -22,6 +23,7 @@ import 'package:flutter/material.dart';
 import 'package:tnd_core/tnd_core.dart'; // 각종 유틸 확인
 import 'package:tnd_pkg_widget/tnd_pkg_widget.dart'; // 공용 위젯
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
 
 part 'splash.dart';
 
