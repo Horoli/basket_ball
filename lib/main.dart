@@ -1,4 +1,4 @@
-import 'package:foul_management/common.dart';
+import 'package:basket_ball/common.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -20,11 +20,11 @@ class AppRoot extends StatelessWidget {
     final Map<String, Widget Function(BuildContext)> routes = {
       '/': (context) => const ViewSplash(),
       'home': (context) => const ViewHome(),
-      'foul': (context) => const ViewFoul(),
+      // 'foul': (context) => const ViewFoul(),
     };
 
     return MaterialApp(
-      title: 'foul_management',
+      title: 'BasketBall',
 
       // theme: ThemeData(
       //   colorScheme: ColorScheme.fromSeed(

@@ -24,6 +24,20 @@ class ViewOperationBoardState extends State<ViewOperationBoard> {
         builder: (context, Map<String, List<double>> mapOfPositions) {
           return Stack(
             children: [
+              Center(
+                child: Container(
+                  width: fullWidth * 0.9,
+                  height: fullHeight * 0.8,
+                  decoration: BoxDecoration(border: Border.all()),
+                  child: Column(
+                    children: [
+                      Container().expand(),
+                      const Divider(),
+                      Container().expand(),
+                    ],
+                  ),
+                ),
+              ),
               Positioned(top: 0, right: 0, child: buildResetButton()),
               for (String key in mapOfPositions.keys.toList())
                 buildPositioned(key, mapOfPositions[key]!),
@@ -61,8 +75,8 @@ class ViewOperationBoardState extends State<ViewOperationBoard> {
                     color: Colors.orange.withOpacity(0.3),
                     borderRadius: const BorderRadius.all(Radius.circular(30)),
                   ),
-                  width: unitWidth,
-                  height: unitHeight,
+                  width: unitWidth * 0.8,
+                  height: unitHeight * 0.8,
                 )
               : Container(
                   decoration: BoxDecoration(
@@ -99,8 +113,8 @@ class ViewOperationBoardState extends State<ViewOperationBoard> {
                   color: Colors.orange,
                   borderRadius: BorderRadius.all(Radius.circular(30)),
                 ),
-                width: unitWidth,
-                height: unitHeight,
+                width: unitWidth * 0.8,
+                height: unitHeight * 0.8,
               )
             : Container(
                 decoration: BoxDecoration(
@@ -149,16 +163,16 @@ class ViewOperationBoardState extends State<ViewOperationBoard> {
   }
 
   final Map<String, List<double>> defaultPositions = {
-    'H-1': [0.0, 100],
-    'H-2': [0.0, 200],
-    'H-3': [0.0, 300],
-    'H-4': [0.0, 400],
-    'H-5': [0.0, 500],
-    'A-1': [75.0, 100],
-    'A-2': [75.0, 200],
-    'A-3': [75.0, 300],
-    'A-4': [75.0, 400],
-    'A-5': [75.0, 500],
-    'ball': [0.0, 600],
+    'H-1': [0.0, 70],
+    'H-2': [0.0, 70 * 2],
+    'H-3': [0.0, 70 * 3],
+    'H-4': [0.0, 70 * 4],
+    'H-5': [0.0, 70 * 5],
+    'A-1': [75.0, 70],
+    'A-2': [75.0, 70 * 2],
+    'A-3': [75.0, 70 * 3],
+    'A-4': [75.0, 70 * 4],
+    'A-5': [75.0, 70 * 5],
+    'ball': [0.0, 70 * 6],
   };
 }
