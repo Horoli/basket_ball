@@ -29,11 +29,11 @@ class ViewHomeState extends State<ViewHome> {
           return Scaffold(
             appBar: AppBar(
               toolbarHeight: kToolbarHeight,
-              backgroundColor: colorAppBar,
+              backgroundColor: COLOR_APPBAR,
               title: Text(titles[$selectedIndex.lastValue]),
             ),
             drawer: Drawer(
-              backgroundColor: colorAppBar,
+              backgroundColor: COLOR_APPBAR,
               child: ListView(
                 children: [
                   DrawerHeader(

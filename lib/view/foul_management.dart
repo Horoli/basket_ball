@@ -60,7 +60,7 @@ class ViewFoulState extends State<ViewFoul>
     return buildTextButton(
       child: const Icon(
         Icons.refresh,
-        color: colorHome,
+        color: COLOR_HOME,
       ),
       onPressed: () {
         GSharedPreferences.remove('home');
@@ -93,7 +93,7 @@ class ViewFoulState extends State<ViewFoul>
                 child: const Text(
                   'add',
                 ),
-                backgroundColor: isHome ? colorHome : colorAway,
+                backgroundColor: isHome ? COLOR_HOME : COLOR_AWAY,
                 onPressed: () {
                   showManagementDialog(isHome, true);
                   ctrNumber.clear();
@@ -104,7 +104,7 @@ class ViewFoulState extends State<ViewFoul>
                 child: const Text(
                   'del',
                 ),
-                backgroundColor: isHome ? colorHome : colorAway,
+                backgroundColor: isHome ? COLOR_HOME : COLOR_AWAY,
                 onPressed: () {
                   showManagementDialog(isHome, false);
                   ctrNumber.clear();
@@ -115,7 +115,7 @@ class ViewFoulState extends State<ViewFoul>
                 child: const Text(
                   'init',
                 ),
-                backgroundColor: isHome ? colorHome : colorAway,
+                backgroundColor: isHome ? COLOR_HOME : COLOR_AWAY,
                 onPressed: () {
                   // TODO : 초기화
                   if (isHome) {
@@ -167,13 +167,15 @@ class ViewFoulState extends State<ViewFoul>
                             ).expand(flex: 3),
                             buildBasicButton(
                                 child: const Text('-'),
-                                backgroundColor: isHome ? colorHome : colorAway,
+                                backgroundColor:
+                                    isHome ? COLOR_HOME : COLOR_AWAY,
                                 onPressed: () => removeFoul(
                                     isHome: isHome, number: getNumber)),
                             Center(child: Text('$getFoulCount')).expand(),
                             buildBasicButton(
                                 child: const Text('+'),
-                                backgroundColor: isHome ? colorHome : colorAway,
+                                backgroundColor:
+                                    isHome ? COLOR_HOME : COLOR_AWAY,
                                 onPressed: () =>
                                     addFoul(isHome: isHome, number: getNumber)),
                           ],

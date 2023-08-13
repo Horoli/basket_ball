@@ -1,21 +1,33 @@
 part of 'common.dart';
 
+const String RESET_BUTTON = 'reset';
+const String MAP_OF_POSITIONS = 'mapOfPositions';
+
+const String DRAWING_DISABLE = '그리기 비활성화\n(이동가능)';
+const String DRAWING_ABLE = '그리기 활성화\n(이동불가)';
+const String DRAWING_CLEAR = '그림 지우기';
+const String DRAWING_OPTION = '그리기 옵션';
+
+const String COLOR_SELECT = '색상 선택';
+
 const double defaultDx = 70;
 const double defaultDy = 150;
 
-const Color colorAppBar = ui.Color.fromARGB(255, 41, 84, 122);
-const Color colorHome = ui.Color.fromARGB(255, 108, 141, 170);
-const Color colorAway = ui.Color.fromARGB(255, 196, 136, 131);
-const Color colorWhite = Colors.white;
-const Color colorBlack = Colors.black;
-const Color colorYellow = Colors.yellow;
-const Color colorOrange = Colors.orange;
-const Color colorCyan = Colors.cyan;
+const Color COLOR_APPBAR = ui.Color.fromARGB(255, 41, 84, 122);
+const Color COLOR_HOME = ui.Color.fromARGB(255, 108, 141, 170);
+const Color COLOR_AWAY = ui.Color.fromARGB(255, 196, 136, 131);
+const Color COLOR_WHITE = Colors.white;
+const Color COLOR_BLACK = Colors.black;
+const Color COLOR_YELLOW = Colors.yellow;
+const Color COLOR_ORANGE = Colors.orange;
+const Color COLOR_CYAN = Colors.cyan;
+
+const String operationBoardImage = 'assets/images/operation-board.png';
 
 Widget buildBasicButton({
   required child,
   required VoidCallback? onPressed,
-  Color backgroundColor = colorHome,
+  Color backgroundColor = COLOR_HOME,
 }) {
   return ElevatedButton(
     style: ElevatedButton.styleFrom(

@@ -7,8 +7,6 @@ class ViewOperationBoard extends StatefulWidget {
 }
 
 class ViewOperationBoardState extends State<ViewOperationBoard> {
-  final String resetButton = 'reset';
-  final String mapName = 'mapOfPositions';
   final double unitWidth = 40.0, unitHeight = 40.0;
   final TStream<Map<String, List<double>>> $mapOfPositions =
       TStream<Map<String, List<double>>>()..sink$({});
@@ -40,9 +38,21 @@ class ViewOperationBoardState extends State<ViewOperationBoard> {
                     const Divider(),
                     Stack(
                       children: [
+                        // Container(
+                        //   height: 600,
+                        //   decoration: BoxDecoration(
+                        //     image: DecorationImage(
+                        //       image: const AssetImage(operationBoardImage),
+                        //       colorFilter: ColorFilter.mode(
+                        //         Colors.white.withOpacity(1),
+                        //         BlendMode.modulate,
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
                         Center(
                           child: Image.asset(
-                            'assets/images/operation-board.png',
+                            operationBoardImage,
                             fit: BoxFit.fill,
                           ),
                         ),
@@ -77,7 +87,16 @@ class ViewOperationBoardState extends State<ViewOperationBoard> {
 
   Widget buildUsePadButton(bool usePad) {
     return buildTextButton(
-        child: Text('usePad : $usePad'),
+        child: usePad
+            ? const Text(DRAWING_ABLE,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ))
+            : const Text(
+                DRAWING_DISABLE,
+                textAlign: TextAlign.center,
+              ),
         onPressed: () async {
           usePad ? $usePad.sink$(false) : $usePad.sink$(true);
 
@@ -99,23 +118,49 @@ class ViewOperationBoardState extends State<ViewOperationBoard> {
   }
 
   Widget buildExchangePadColor() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Column(
       children: [
-        const Text('색상 선택'),
-        const VerticalDivider(),
-        buildSelectColorButton(colorWhite),
-        buildSelectColorButton(colorBlack),
-        buildSelectColorButton(colorYellow),
-        buildSelectColorButton(colorOrange),
-        buildSelectColorButton(colorCyan),
+        SizedBox(
+          width: fullWidth,
+          child: const Text(
+            DRAWING_OPTION,
+            textAlign: TextAlign.start,
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(children: [
+              const Text(COLOR_SELECT),
+              const VerticalDivider(),
+              buildSelectColorButton(COLOR_WHITE).expand(),
+              buildSelectColorButton(COLOR_BLACK).expand(),
+              buildSelectColorButton(COLOR_YELLOW).expand(),
+              buildSelectColorButton(COLOR_ORANGE).expand(),
+              buildSelectColorButton(COLOR_CYAN).expand(),
+            ]).expand(),
+            const VerticalDivider(),
+            Row(children: [
+              const Text(DRAWING_CLEAR),
+              const VerticalDivider(),
+              buildBasicButton(
+                child: const Icon(Icons.remove_from_queue_rounded),
+                onPressed: () {
+                  signatureGlobalKey.currentState!.clear();
+                },
+              )
+            ]).expand(),
+          ],
+        ),
       ],
     );
   }
 
   Widget buildSelectColorButton(Color color) {
     return buildBasicButton(
-        child: Container(),
+        child: Text(''),
+        // child: Container(),
         backgroundColor: color,
         onPressed: () {
           $strokeColor.sink$(color);
@@ -127,10 +172,10 @@ class ViewOperationBoardState extends State<ViewOperationBoard> {
     return buildTextButton(
       child: const Icon(
         Icons.refresh,
-        color: colorHome,
+        color: COLOR_HOME,
       ),
       onPressed: () {
-        GSharedPreferences.remove(mapName);
+        GSharedPreferences.remove(MAP_OF_POSITIONS);
         $mapOfPositions.sink$(defaultPositions);
       },
     );
@@ -158,8 +203,8 @@ class ViewOperationBoardState extends State<ViewOperationBoard> {
               : Container(
                   decoration: BoxDecoration(
                       color: isHomeTeam
-                          ? colorHome.withOpacity(0.3)
-                          : colorAway.withOpacity(0.3),
+                          ? COLOR_HOME.withOpacity(0.3)
+                          : COLOR_AWAY.withOpacity(0.3),
                       borderRadius:
                           const BorderRadius.all(Radius.circular(30))),
                   width: unitWidth,
@@ -181,7 +226,7 @@ class ViewOperationBoardState extends State<ViewOperationBoard> {
           String jsonPosition = jsonEncode(tmpMap);
           $mapOfPositions.sink$(tmpMap);
 
-          GSharedPreferences.setString(mapName, jsonPosition);
+          GSharedPreferences.setString(MAP_OF_POSITIONS, jsonPosition);
         },
         child: isBall
             ? Container(
@@ -194,7 +239,7 @@ class ViewOperationBoardState extends State<ViewOperationBoard> {
               )
             : Container(
                 decoration: BoxDecoration(
-                    color: isHomeTeam ? colorHome : colorAway,
+                    color: isHomeTeam ? COLOR_HOME : COLOR_AWAY,
                     borderRadius: const BorderRadius.all(Radius.circular(30))),
                 width: unitWidth,
                 height: unitHeight,
@@ -214,12 +259,12 @@ class ViewOperationBoardState extends State<ViewOperationBoard> {
   }
 
   Future initData() async {
-    if (GSharedPreferences.get(mapName) == null) {
+    if (GSharedPreferences.get(MAP_OF_POSITIONS) == null) {
       $mapOfPositions.sink$(defaultPositions);
       return;
     }
 
-    String getData = GSharedPreferences.get(mapName)!.toString();
+    String getData = GSharedPreferences.get(MAP_OF_POSITIONS)!.toString();
 
     Map jsonData = jsonDecode(getData);
 
