@@ -38,6 +38,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    # -assets/images/
-    - assets/images/basket-ball.png
-    - assets/images/operation-board.png
+    - assets/images/
+    # - assets/images/basket-ball.png
+    # - assets/images/operation-board.png

@@ -16,6 +16,7 @@ class ViewOperationBoardState extends State<ViewOperationBoard> {
 
   final GlobalKey<SfSignaturePadState> signatureGlobalKey = GlobalKey();
 
+  bool get isPort => MediaQuery.of(context).orientation == Orientation.portrait;
   double get fullWidth => MediaQuery.of(context).size.width;
   double get fullHeight => MediaQuery.of(context).size.height;
 
@@ -38,21 +39,9 @@ class ViewOperationBoardState extends State<ViewOperationBoard> {
                     const Divider(),
                     Stack(
                       children: [
-                        // Container(
-                        //   height: 600,
-                        //   decoration: BoxDecoration(
-                        //     image: DecorationImage(
-                        //       image: const AssetImage(operationBoardImage),
-                        //       colorFilter: ColorFilter.mode(
-                        //         Colors.white.withOpacity(1),
-                        //         BlendMode.modulate,
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
                         Center(
                           child: Image.asset(
-                            operationBoardImage,
+                            isPort ? IMAGE.HALF_COURT : IMAGE.FULL_COURT,
                             fit: BoxFit.fill,
                           ),
                         ),
@@ -78,7 +67,6 @@ class ViewOperationBoardState extends State<ViewOperationBoard> {
                         ? buildExchangePadColor()
                             .sizedBox(height: kToolbarHeight)
                         : Container().sizedBox(height: kToolbarHeight),
-                    // const Padding(padding: EdgeInsets.all(10)),
                   ],
                 );
               });
@@ -99,21 +87,6 @@ class ViewOperationBoardState extends State<ViewOperationBoard> {
               ),
         onPressed: () async {
           usePad ? $usePad.sink$(false) : $usePad.sink$(true);
-
-          // 현재 패드가 use인 경우, padData를 저장함
-          // if (usePad) {
-          // await signatureGlobalKey.currentState!.toImage();
-          // final padData =
-          //     await signatureGlobalKey.currentState!.toImage(pixelRatio: 3);
-          // print('padData $padData');
-
-          // final bytes =
-          //     await padData.toByteData(format: ui.ImageByteFormat.png);
-          //   $usePad.sink$(false);
-          //   return;
-          // }
-
-          // $usePad.sink$(true);
         });
   }
 
@@ -159,8 +132,7 @@ class ViewOperationBoardState extends State<ViewOperationBoard> {
 
   Widget buildSelectColorButton(Color color) {
     return buildBasicButton(
-        child: Text(''),
-        // child: Container(),
+        child: color == $strokeColor.lastValue ? Text('S') : Text(''),
         backgroundColor: color,
         onPressed: () {
           $strokeColor.sink$(color);
@@ -170,10 +142,7 @@ class ViewOperationBoardState extends State<ViewOperationBoard> {
 
   Widget buildResetButton() {
     return buildTextButton(
-      child: const Icon(
-        Icons.refresh,
-        color: COLOR_HOME,
-      ),
+      child: const Icon(Icons.refresh, color: COLOR_HOME),
       onPressed: () {
         GSharedPreferences.remove(MAP_OF_POSITIONS);
         $mapOfPositions.sink$(defaultPositions);
@@ -192,14 +161,10 @@ class ViewOperationBoardState extends State<ViewOperationBoard> {
         feedback: Material(
           type: MaterialType.transparency,
           child: isBall
-              ? Container(
-                  decoration: BoxDecoration(
-                    color: Colors.orange.withOpacity(0.3),
-                    borderRadius: const BorderRadius.all(Radius.circular(30)),
-                  ),
+              ? SizedBox(
                   width: unitWidth * 0.8,
                   height: unitHeight * 0.8,
-                )
+                  child: Image.asset(IMAGE.BASKET_BALL))
               : Container(
                   decoration: BoxDecoration(
                       color: isHomeTeam
@@ -229,13 +194,10 @@ class ViewOperationBoardState extends State<ViewOperationBoard> {
           GSharedPreferences.setString(MAP_OF_POSITIONS, jsonPosition);
         },
         child: isBall
-            ? Container(
-                decoration: const BoxDecoration(
-                  color: Colors.orange,
-                  borderRadius: BorderRadius.all(Radius.circular(30)),
-                ),
+            ? SizedBox(
                 width: unitWidth * 0.8,
                 height: unitHeight * 0.8,
+                child: Image.asset(IMAGE.MINI_BASKET_BALL),
               )
             : Container(
                 decoration: BoxDecoration(

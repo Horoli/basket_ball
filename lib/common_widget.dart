@@ -22,8 +22,6 @@ const Color COLOR_YELLOW = Colors.yellow;
 const Color COLOR_ORANGE = Colors.orange;
 const Color COLOR_CYAN = Colors.cyan;
 
-const String operationBoardImage = 'assets/images/operation-board.png';
-
 Widget buildBasicButton({
   required child,
   required VoidCallback? onPressed,

@@ -24,7 +24,7 @@ class ViewSplashState extends State<ViewSplash>
             child: Padding(
               padding: const EdgeInsets.all(15.0),
               child: Center(
-                child: Image.asset('assets/images/basket-ball.png'),
+                child: Image.asset(IMAGE.BASKET_BALL),
               ),
             ),
           );

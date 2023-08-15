@@ -25,6 +25,8 @@ import 'package:tnd_pkg_widget/tnd_pkg_widget.dart'; // 공용 위젯
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
 
+import 'package:basket_ball/preset/image.dart' as IMAGE;
+
 part 'splash.dart';
 
 part 'common_widget.dart';
