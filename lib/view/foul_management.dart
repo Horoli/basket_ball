@@ -27,7 +27,7 @@ class ViewFoulState extends State<ViewFoul>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      resizeToAvoidBottomInset: true,
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           Positioned(top: 0, right: 0, child: buildResetButton()),
@@ -201,18 +201,21 @@ class ViewFoulState extends State<ViewFoul>
             FocusScope.of(context).unfocus();
             Navigator.pop(context);
           },
-          child: AlertDialog(
-            title: isAdd
-                ? const Text('추가하고자 하는 플레이어의 번호를 입력하세요')
-                : const Text('지우고자 하는 플레이어의 번호를 입력해주세요.'),
-            content: TextField(
-              keyboardType: TextInputType.number,
-              autofocus: true,
-              controller: ctrNumber,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: AlertDialog(
+              title: isAdd
+                  ? const Text('추가하고자 하는 플레이어의 번호를 입력하세요')
+                  : const Text('지우고자 하는 플레이어의 번호를 입력해주세요.'),
+              content: TextField(
+                keyboardType: TextInputType.number,
+                autofocus: true,
+                controller: ctrNumber,
+              ),
+              actions: [
+                isAdd ? buildAddButton(isHome) : buildRemoveButton(isHome),
+              ],
             ),
-            actions: [
-              isAdd ? buildAddButton(isHome) : buildRemoveButton(isHome),
-            ],
           ),
         );
       },
