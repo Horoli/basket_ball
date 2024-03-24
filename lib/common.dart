@@ -32,7 +32,7 @@ part 'splash.dart';
 part 'common_widget.dart';
 part 'global.dart';
 
-part 'model/foul.dart';
+part 'model/team.dart';
 
 part 'view/home.dart';
 part 'view/foul_management.dart';

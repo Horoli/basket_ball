@@ -25,12 +25,11 @@ class AppRoot extends StatelessWidget {
 
     return MaterialApp(
       title: 'BasketBall',
-
-      // theme: ThemeData(
-      //   colorScheme: ColorScheme.fromSeed(
-      //       seedColor: const Color.fromARGB(255, 83, 27, 27)),
-      // useMaterial3: true,
-      // ),
+      theme: ThemeData(
+        // colorScheme:
+        //     ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 255, 255, 255)),
+        useMaterial3: false,
+      ),
       routes: routes,
     );
   }
